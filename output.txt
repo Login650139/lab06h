@@ -1,0 +1,312 @@
+Script started on 2026-04-19 15:24:03+00:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="80" LINES="24"]
+[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mmkdir -p formatter_lib formatter_ex_lib solver_lib he[27m[7ml[27m[7mlo_world_application solver_application[27m[Amkdir -p formatter_lib formatter_ex_lib solver_lib hello_world_application solver_application
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > CMakeLists.txt << 'EOF'[27m
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(lab03)[27m
+
+[7mset(CMAKE_CXX_STANDARD 11)[27m
+[7mset(CMAKE_CXX_STANDARD_REQUIRED ON)[27m
+
+[7madd_subdirectory(formatter_lib)[27m
+[7madd_subdirectory(formatter_ex_lib)[27m
+[7madd_subdirectory(solver_lib)[27m
+[7madd_subdirectory(hello_world_application)[27m
+[7madd_subdirectory(solver_application)[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(lab03)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(formatter_lib)
+add_subdirectory(formatter_ex_lib)
+add_subdirectory(solver_lib)
+add_subdirectory(hello_world_application)
+add_subdirectory(solver_application)
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > formatter_lib/CMakeLists.txt << 'EOF'[27m
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(formatter)[27m
+
+[7madd_library(formatter STATIC formatter.cpp)[27m
+[7mtarget_include_directories(formatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})[27m
+[7mEOF[27m
+
+[7mcat > formatter_lib/formatter.hpp << 'EOF'[27m
+[7m#ifndef FORMATTER_HPP[27m
+[7m#define FORMATTER_HPP[27m
+[7m#include <string>[27m
+[7mstd::string format(const std::string& message);[27m
+[7m#endif[27m
+[7mEOF[27m
+
+[7mcat > formatter_lib/formatter.cpp << 'EOF'[27m
+[7m#include "formatter.hpp"[27m
+[7mstd::string format(const std::string& message) {[27m
+[7m    return "[LOG] " + message;[27m
+[7m}[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > formatter_lib/CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(formatter)
+
+add_library(formatter STATIC formatter.cpp)
+target_include_directories(formatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+EOF
+
+cat > formatter_lib/formatter.hpp << 'EOF'
+#ifndef FORMATTER_HPP
+#define FORMATTER_HPP
+#include <string>
+std::string format(const std::string& message);
+#endif
+EOF
+
+cat > formatter_lib/formatter.cpp << 'EOF'
+#include "formatter.hpp"
+std::string format(const std::string& message) {
+    return "[LOG] " + message;
+}
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > formatter_ex_lib/CMakeLists.txt << 'EOF'[27m
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(formatter_ex)[27m
+
+[7madd_library(formatter_ex STATIC formatter_ex.cpp)[27m
+[7mtarget_link_libraries(formatter_ex formatter)[27m
+[7mtarget_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})[27m
+[7mEOF[27m
+
+[7mcat > formatter_ex_lib/formatter_ex.hpp << 'EOF'[27m
+[7m#ifndef FORMATTER_EX_HPP[27m
+[7m#define FORMATTER_EX_HPP[27m
+[7m#include <string>[27m
+[7m#include "formatter.hpp"[27m
+[7mstd::string format_ex(const std::string& message);[27m
+[7m#endif[27m
+[7mEOF[27m
+
+[7mcat > formatter_ex_lib/formatter_ex.cpp << 'EOF'[27m
+[7m#include "formatter_ex.hpp"[27m
+[7mstd::string format_ex(const std::string& message) {[27m
+[7m    return format(message) + " [EXTENDED]";[27m
+[7m}[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > formatter_ex_lib/CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(formatter_ex)
+
+add_library(formatter_ex STATIC formatter_ex.cpp)
+target_link_libraries(formatter_ex formatter)
+target_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+EOF
+
+cat > formatter_ex_lib/formatter_ex.hpp << 'EOF'
+#ifndef FORMATTER_EX_HPP
+#define FORMATTER_EX_HPP
+#include <string>
+#include "formatter.hpp"
+std::string format_ex(const std::string& message);
+#endif
+EOF
+
+cat > formatter_ex_lib/formatter_ex.cpp << 'EOF'
+#include "formatter_ex.hpp"
+std::string format_ex(const std::string& message) {
+    return format(message) + " [EXTENDED]";
+}
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > solver_lib/CMakeLists.txt << 'EOF'[27m
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(solver_lib)[27m
+
+[7madd_library(solver_lib STATIC solver.cpp)[27m
+[7mtarget_include_directories(solver_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})[27m
+[7mEOF[27m
+
+[7mcat > solver_lib/solver.hpp << 'EOF'[27m
+[7m#ifndef SOLVER_HPP[27m
+[7m#define SOLVER_HPP[27m
+[7mint solve(int a, int b);[27m
+[7m#endif[27m
+[7mEOF[27m
+
+[7mcat > solver_lib/solver.cpp << 'EOF'[27m
+[7m#include "solver.hpp"[27m
+[7mint solve(int a, int b) {[27m
+[7m    return a + b;[27m
+[7m}[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > solver_lib/CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(solver_lib)
+
+add_library(solver_lib STATIC solver.cpp)
+target_include_directories(solver_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+EOF
+
+cat > solver_lib/solver.hpp << 'EOF'
+#ifndef SOLVER_HPP
+#define SOLVER_HPP
+int solve(int a, int b);
+#endif
+EOF
+
+cat > solver_lib/solver.cpp << 'EOF'
+#include "solver.hpp"
+int solve(int a, int b) {
+    return a + b;
+}
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > hello_world_application/CMakeLists.txt << 'EOF'[27m 
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(hello_world)[27m
+
+[7madd_executable(hello_world hello_world.cpp)[27m
+[7mtarget_link_libraries(hello_world formatter_ex)[27m
+[7mEOF[27m
+
+[7mcat > hello_world_application/hello_world.cpp << 'EOF'[27m
+[7m#include <iostream>[27m
+[7m#include "formatter_ex.hpp"[27m
+[7mint main() {[27m
+[7m    std::cout << format_ex("Hello, World!") << std::endl;[27m
+[7m    return 0;[27m
+[7m}[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > hello_world_application/CMakeLists.txt << 'EOF' 
+cmake_minimum_required(VERSION 3.4)
+project(hello_world)
+
+add_executable(hello_world hello_world.cpp)
+target_link_libraries(hello_world formatter_ex)
+EOF
+
+cat > hello_world_application/hello_world.cpp << 'EOF'
+#include <iostream>
+#include "formatter_ex.hpp"
+int main() {
+    std::cout << format_ex("Hello, World!") << std::endl;
+    return 0;
+}
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcat > solver_application/CMakeLists.txt << 'EOF'[27m
+[7mcmake_minimum_required(VERSION 3.4)[27m
+[7mproject(solver)[27m
+
+[7madd_executable(solver solver.cpp)[27m
+[7mtarget_link_libraries(solver formatter_ex solver_lib)[27m
+[7mEOF[27m
+
+[7mcat > solver_application/solver.cpp << 'EOF'[27m
+[7m#include <iostream>[27m
+[7m#include "formatter_ex.hpp"[27m
+[7m#include "solver.hpp"[27m
+[7mint main() {[27m
+[7m    int result = solve(2, 3);[27m
+[7m    std::cout << format_ex("Result: " + std::to_string(result)) << std::endl;[27m
+[7m    return 0;[27m
+[7m}[27m
+[7mEOF[27m[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ cat > solver_application/CMakeLists.txt << 'EOF'
+cmake_minimum_required(VERSION 3.4)
+project(solver)
+
+add_executable(solver solver.cpp)
+target_link_libraries(solver formatter_ex solver_lib)
+EOF
+
+cat > solver_application/solver.cpp << 'EOF'
+#include <iostream>
+#include "formatter_ex.hpp"
+#include "solver.hpp"
+int main() {
+    int result = solve(2, 3);
+    std::cout << format_ex("Result: " + std::to_string(result)) << std::endl;
+    return 0;
+}
+EOF
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mcd ~/lab03[27mcd ~/lab03
+[?2004l[?2004h]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ [7mmkdir build && cd build[27m
+[7mcmake ..[27m
+[7mcmake --build .[27m[A[A]0;dima777@Osnovnaya: ~/lab03[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03[00m$ mkdir build && cd build
+cmake ..
+cmake --build .
+[?2004l[0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+[0mCMake Deprecation Warning at formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+[0mCMake Deprecation Warning at formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+[0mCMake Deprecation Warning at solver_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+[0mCMake Deprecation Warning at hello_world_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+[0mCMake Deprecation Warning at solver_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+[0m
+-- Configuring done (0.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/dima777/lab03/build
+[ 10%] [32mBuilding CXX object formatter_lib/CMakeFiles/formatter.dir/formatter.cpp.o[0m
+[ 20%] [32m[1mLinking CXX static library libformatter.a[0m
+[ 20%] Built target formatter
+[ 30%] [32mBuilding CXX object formatter_ex_lib/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o[0m
+[ 40%] [32m[1mLinking CXX static library libformatter_ex.a[0m
+[ 40%] Built target formatter_ex
+[ 50%] [32mBuilding CXX object solver_lib/CMakeFiles/solver_lib.dir/solver.cpp.o[0m
+[ 60%] [32m[1mLinking CXX static library libsolver_lib.a[0m
+[ 60%] Built target solver_lib
+[ 70%] [32mBuilding CXX object hello_world_application/CMakeFiles/hello_world.dir/hello_world.cpp.o[0m
+[ 80%] [32m[1mLinking CXX executable hello_world[0m
+[ 80%] Built target hello_world
+[ 90%] [32mBuilding CXX object solver_application/CMakeFiles/solver.dir/solver.cpp.o[0m
+[100%] [32m[1mLinking CXX executable solver[0m
+[100%] Built target solver
+[?2004h]0;dima777@Osnovnaya: ~/lab03/build[01;32mdima777@Osnovnaya[00m:[01;34m~/lab03/build[00m$ exity[K
+[?2004lexit
+
+Script done on 2026-04-19 15:26:26+00:00 [COMMAND_EXIT_CODE="0"]
