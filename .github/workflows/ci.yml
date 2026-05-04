@@ -28,7 +28,7 @@ jobs:
 
     - name: Collect coverage
       run: |
-        lcov --capture --directory . --output-file coverage.info --ignore-errors gcov,source
+        lcov --capture --directory . --output-file coverage.info --ignore-errors gcov,source,mismatch
         lcov --remove coverage.info '/usr/*' '*/third-party/*' '*/tests/*' --output-file coverage.info --ignore-errors unused
         lcov --list coverage.info
 
