@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.4)
-project(lab03)
+cmake_minimum_required(VERSION 3.10)
+project(lab05 VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+option(BUILD_TESTS "Build tests" OFF)
 
-add_subdirectory(formatter_lib)
-add_subdirectory(formatter_ex_lib)
-add_subdirectory(solver_lib)
-add_subdirectory(hello_world_application)
-add_subdirectory(solver_application)
+add_subdirectory(banking)
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(third-party/gtest)
+    add_executable(check tests/test_account.cpp tests/test_transaction.cpp)
+    target_link_libraries(check banking gtest_main)
+    add_test(NAME check COMMAND check)
+endif()
