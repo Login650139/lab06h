@@ -1,8 +1,8 @@
 _build/
-*.pyc
-*.swp
-*.swo
-*.out
-*.log
-*.txt
-!output.txt
+artifacts/
+*.o
+*.a
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
