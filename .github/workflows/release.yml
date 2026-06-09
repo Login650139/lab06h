@@ -1,0 +1,138 @@
+name: Release packages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-test:
+    name: build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y cmake g++
+
+      - name: Configure
+        run: cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build _build --config Release
+
+      - name: Run solver
+        run: echo "3 4" | ./_build/solver
+
+  create-release:
+    name: create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release view "$GITHUB_REF_NAME" || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "Release $GITHUB_REF_NAME"
+
+  package-linux:
+    name: package Linux DEB RPM TGZ ZIP
+    runs-on: ubuntu-latest
+    needs: create-release
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y cmake g++ rpm zip
+
+      - name: Configure
+        run: cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build _build --config Release
+
+      - name: Create packages
+        run: |
+          mkdir -p packages
+          cpack --config _build/CPackConfig.cmake -G DEB -B packages
+          cpack --config _build/CPackConfig.cmake -G RPM -B packages
+          cpack --config _build/CPackConfig.cmake -G TGZ -B packages
+          cpack --config _build/CPackConfig.cmake -G ZIP -B packages
+          ls -la packages
+
+      - name: Upload packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: find packages -maxdepth 1 -type f -exec gh release upload "$GITHUB_REF_NAME" {} --clobber \;
+
+  package-macos:
+    name: package macOS DMG
+    runs-on: macos-latest
+    needs: create-release
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build _build --config Release
+
+      - name: Create DMG
+        run: |
+          mkdir -p packages
+          cpack --config _build/CPackConfig.cmake -G DragNDrop -B packages
+          ls -la packages
+
+      - name: Upload DMG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: find packages -maxdepth 1 -type f -exec gh release upload "$GITHUB_REF_NAME" {} --clobber \;
+
+  package-windows:
+    name: package Windows MSI
+    runs-on: windows-latest
+    needs: create-release
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install WiX
+        run: choco install wixtoolset -y
+
+      - name: Configure
+        run: cmake -S . -B _build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build
+        run: cmake --build _build --config Release
+
+      - name: Create MSI
+        run: New-Item -ItemType Directory -Force -Path packages; cpack --config _build/CPackConfig.cmake -G WIX -B packages -C Release
+
+      - name: Upload MSI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: Get-ChildItem packages -File | ForEach-Object { gh release upload $env:GITHUB_REF_NAME $_.FullName --clobber }
